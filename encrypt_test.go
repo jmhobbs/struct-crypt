@@ -91,7 +91,7 @@ func Test_Encrypt(t *testing.T) {
 		}
 
 		if !bytes.Equal(decrypted, plaintext) {
-			t.Errorf("decrypted does not match plaintext\n%q != %q", string(decrypted), plaintext)
+			t.Errorf("decrypted does not match plaintext\n%q != %q", string(decrypted), string(plaintext))
 		}
 	})
 
@@ -122,6 +122,42 @@ func Test_Encrypt(t *testing.T) {
 
 		if !bytes.Equal(decrypted, plaintext) {
 			t.Errorf("decrypted does not match plaintext\n%q != %q", string(decrypted), plaintext)
+		}
+	})
+
+	t.Run("preserve plaintext", func(t *testing.T) {
+		plaintext := "top secret bytes"
+
+		obj := struct {
+			PlainText  string `encrypt:"CipherText,preserve"`
+			CipherText []byte
+		}{
+			PlainText: plaintext,
+		}
+
+		if err := crypt.Encrypt(&obj); err != nil {
+			t.Fatalf("unable to encrypt: %v", err)
+		}
+
+		if obj.PlainText != plaintext {
+			t.Errorf("plaintext content was not preserved: %q != %q", obj.PlainText, plaintext)
+		}
+	})
+
+	t.Run("clear plaintext", func(t *testing.T) {
+		obj := struct {
+			PlainText  string `encrypt:"CipherText"`
+			CipherText []byte
+		}{
+			PlainText: "top secret bytes",
+		}
+
+		if err := crypt.Encrypt(&obj); err != nil {
+			t.Fatalf("unable to encrypt: %v", err)
+		}
+
+		if obj.PlainText != "" {
+			t.Errorf("plaintext content was not removed: %q != %q", obj.PlainText, "")
 		}
 	})
 }
