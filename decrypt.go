@@ -17,8 +17,10 @@ func (e *Transform) Decrypt(input interface{}) error {
 	for i := 0; i < valueType.NumField(); i++ {
 		sourceTypeField := valueType.Field(i)
 
-		targetName, ok := sourceTypeField.Tag.Lookup(decryptTag)
+		tagValue, ok := sourceTypeField.Tag.Lookup(decryptTag)
 		if ok {
+			targetName, clearSource := parseTagValue(tagValue)
+
 			sourceField := value.Field(i)
 			targetField := value.FieldByName(targetName)
 
@@ -65,15 +67,17 @@ func (e *Transform) Decrypt(input interface{}) error {
 			}
 
 			// clear source
-			if sourceField.CanSet() {
-				switch getFieldType(sourceField) {
-				case fieldTypeString:
-					sourceField.SetString("")
-				case fieldTypeByteSlice:
-					sourceField.Set(reflect.ValueOf([]byte{}))
+			if clearSource {
+				if sourceField.CanSet() {
+					switch getFieldType(sourceField) {
+					case fieldTypeString:
+						sourceField.SetString("")
+					case fieldTypeByteSlice:
+						sourceField.Set(reflect.ValueOf([]byte{}))
+					}
+				} else {
+					return FieldError{"source", sourceTypeField.Name, "can not be set"}
 				}
-			} else {
-				return FieldError{"source", sourceTypeField.Name, "can not be set"}
 			}
 		}
 	}

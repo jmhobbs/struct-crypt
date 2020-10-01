@@ -20,8 +20,11 @@ func (e *Transform) Encrypt(input interface{}) error {
 	for i := 0; i < valueType.NumField(); i++ {
 		sourceTypeField := valueType.Field(i)
 
-		targetName, ok := sourceTypeField.Tag.Lookup(encryptTag)
+		tagValue, ok := sourceTypeField.Tag.Lookup(encryptTag)
 		if ok {
+
+			targetName, clearSource := parseTagValue(tagValue)
+
 			sourceField := value.Field(i)
 			targetField := value.FieldByName(targetName)
 
@@ -35,7 +38,7 @@ func (e *Transform) Encrypt(input interface{}) error {
 
 			var nonce [24]byte
 			if _, err := io.ReadFull(rand.Reader, nonce[:]); err != nil {
-				return fmt.Errorf("unable to create nonce for field %q: %v", sourceTypeField.Name, err)
+				return FieldError{"source", sourceTypeField.Name, fmt.Sprintf("unable to create nonce: %v", err)}
 			}
 
 			var encrypted []byte
@@ -67,15 +70,17 @@ func (e *Transform) Encrypt(input interface{}) error {
 			}
 
 			// clear source
-			if sourceField.CanSet() {
-				switch getFieldType(sourceField) {
-				case fieldTypeString:
-					sourceField.SetString("")
-				case fieldTypeByteSlice:
-					sourceField.Set(reflect.ValueOf([]byte{}))
+			if clearSource {
+				if sourceField.CanSet() {
+					switch getFieldType(sourceField) {
+					case fieldTypeString:
+						sourceField.SetString("")
+					case fieldTypeByteSlice:
+						sourceField.Set(reflect.ValueOf([]byte{}))
+					}
+				} else {
+					return FieldError{"source", sourceTypeField.Name, "can not be cleared"}
 				}
-			} else {
-				return FieldError{"source", sourceTypeField.Name, "can not be set"}
 			}
 		}
 	}
