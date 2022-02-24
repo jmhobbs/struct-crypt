@@ -6,9 +6,17 @@ import "crypto/rand"
 func Example() {
 	type ExampleStruct struct {
 		StringPlainText  string `encrypt:"BytesCipherText"`
-		StringCipherText string `decrypt:"StringPlainText`
+		StringCipherText string `decrypt:"StringPlainText"`
 		BytesPlainText   []byte `encrypt:"StringCipherText"`
 		BytesCipherText  []byte `decrypt:"BytesPlainText"`
+	}
+}
+
+// By default fields are cleared when encrypted or decrypted. Use `,preserve` to prevent this.
+func ExamplePreserve() {
+	type ExampleStruct struct {
+		PlainText  string `encrypt:"CipherText,preserve"`
+		CipherText string `decrypt:"PlainText"`
 	}
 }
 
