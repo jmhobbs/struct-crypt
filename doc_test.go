@@ -2,19 +2,18 @@ package crypt
 
 import "crypto/rand"
 
-// Struct tags target other, public fields, and do not have to be symmetric.
+
 func Example() {
+	// Struct tags target other, public fields, and do not have to be symmetric.
 	type ExampleStruct struct {
 		StringPlainText  string `encrypt:"BytesCipherText"`
 		StringCipherText string `decrypt:"StringPlainText"`
 		BytesPlainText   []byte `encrypt:"StringCipherText"`
 		BytesCipherText  []byte `decrypt:"BytesPlainText"`
 	}
-}
 
-// By default fields are cleared when encrypted or decrypted. Use `,preserve` to prevent this.
-func ExamplePreserve() {
-	type ExampleStruct struct {
+	// By default fields are cleared when encrypted or decrypted. Use `,preserve` to prevent this.
+	type PreserveStruct struct {
 		PlainText  string `encrypt:"CipherText,preserve"`
 		CipherText string `decrypt:"PlainText"`
 	}
