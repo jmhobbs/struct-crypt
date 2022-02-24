@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/nacl/secretbox"
 )
 
-// Encrypt all tagged fields to their targets
+// Encrypt all tagged fields to their targets.
 func (e *Transform) Encrypt(input interface{}) error {
 	value, valueType, err := validateInput(input)
 	if err != nil {
@@ -55,7 +55,7 @@ func (e *Transform) Encrypt(input interface{}) error {
 					sourceField.Bytes(),
 					&nonce,
 					&e.secret)
-			default:
+			case fieldTypeUnsupported:
 				return FieldError{"source", sourceTypeField.Name, "must be a string or []byte"}
 			}
 
@@ -65,7 +65,7 @@ func (e *Transform) Encrypt(input interface{}) error {
 				targetField.SetString(base64.StdEncoding.EncodeToString(encrypted))
 			case fieldTypeByteSlice:
 				targetField.Set(reflect.ValueOf(encrypted))
-			default:
+			case fieldTypeUnsupported:
 				return FieldError{"target", targetName, "must be a string or []byte"}
 			}
 
@@ -77,6 +77,8 @@ func (e *Transform) Encrypt(input interface{}) error {
 						sourceField.SetString("")
 					case fieldTypeByteSlice:
 						sourceField.Set(reflect.ValueOf([]byte{}))
+					case fieldTypeUnsupported:
+						return FieldError{"source", sourceTypeField.Name, "must be a string or []byte"}
 					}
 				} else {
 					return FieldError{"source", sourceTypeField.Name, "can not be cleared"}

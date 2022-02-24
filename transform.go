@@ -2,7 +2,7 @@ package crypt
 
 import "reflect"
 
-// Transform is used to automatically encrypt or decrypt fields
+// Transform is used to automatically encrypt or decrypt fields.
 type Transform struct {
 	secret [32]byte
 }
