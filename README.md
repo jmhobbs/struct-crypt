@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/jmhobbs/struct-crypt.svg?branch=main)](https://travis-ci.org/jmhobbs/struct-crypt) [![codecov](https://codecov.io/gh/jmhobbs/struct-crypt/branch/main/graph/badge.svg)](https://codecov.io/gh/jmhobbs/struct-crypt) [![PkgGoDev](https://pkg.go.dev/badge/github.com/jmhobbs/struct-crypt)](https://pkg.go.dev/github.com/jmhobbs/struct-crypt)
+[![Build Status](https://circleci.com/gh/jmhobbs/struct-crypt/tree/main.svg?style=shield)](https://circleci.com/gh/struct-crypt/martha/tree/main)
+[![codecov](https://codecov.io/gh/jmhobbs/struct-crypt/branch/main/graph/badge.svg)](https://codecov.io/gh/jmhobbs/struct-crypt)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/jmhobbs/struct-crypt)](https://pkg.go.dev/github.com/jmhobbs/struct-crypt)
 
 # struct-crypt
 
